@@ -122,104 +122,106 @@ $resultados = $stm->fetchAll();
 
 
 
-
-<div class="position-absolute top-50 start-50 translate-middle z-0 position-absolute p-5 rounded-3 shadow-lg p-3 mb-5 bg-body-tertiary rounded">
-    <h1 class="text-center">GASTOS FAMILIARES</h1>
-    <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
-        <input type="hidden" name="id" value="<?php echo isset($codigoPersona)? $codigoPersona : "" ?>">
-        <label class="form-label" for="nombre">Nombre Completo:</label>
-        <input class="form-control" type="text" name="nombre" id="nombre" value="<?php echo isset($nombre)? $nombre : "" ?>"><br>
-
-
-        <label class="form-label" for="tipo_gasto">Tipo Gasto: </label>
-        <select class="form-select" name="cmbtipoGasto" id="tipo_gasto">
-            <option value="">Seleccione un tipo de gasto: </option>
-            <option value="Alimentación" <?php echo ($tipo_gasto=='Alimentación')? 'selected' : '' ?> >Alimentación</option>
-            <option value="Transporte" <?php echo ($tipo_gasto=='Transporte')? 'selected' : '' ?>>Transporte</option>
-            <option value="Salud" <?php echo  ($tipo_gasto=='Salud')? 'selected' : '' ?>>Salud</option>
-            <option value="Luz" <?php echo  ($tipo_gasto=='Luz')? 'selected' : '' ?>>Luz</option>
-            <option value="Hormiga" <?php echo  ($tipo_gasto=='Hormiga')? 'selected' : '' ?>>Hormiga</option>
-        </select><br>
+<div style="width: 100%; height: 1000px;">
+    <div style="width: 50%; margin-left: 25%" class=" p-5 rounded-3 shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+        <h1 class="text-center">GASTOS FAMILIARES</h1>
+        <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
+            <input type="hidden" name="id" value="<?php echo isset($codigoPersona)? $codigoPersona : "" ?>">
+            <label class="form-label" for="nombre">Nombre Completo:</label>
+            <input class="form-control" type="text" name="nombre" id="nombre" value="<?php echo isset($nombre)? $nombre : "" ?>"><br>
 
 
-        <label class="form-label" for="valor_gastos">Ingrese valor de gasto:</label>
-        <input class="form-control" type="text" name="valor_gastos" id="valor_gastos" value="<?php echo isset($valor_gastos)? $valor_gastos : "" ?>"><br>
-
-        <input class="btn btn-primary" type="submit" value="Enviar" name="submit1">
-
-        <?php
-        if($codigoPersona){
-            echo '<input class="btn btn-dark" type="submit" value="Modificar" name="submit2">';
-        }
-        ?>
-        <a class="btn btn-secondary" href="index.php">Cancelar</a>
-    </form>
-    <br>
-    <?php if($error):  ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <?php echo "<p>$error</p>"; ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <?php endif; ?>
+            <label class="form-label" for="tipo_gasto">Tipo Gasto: </label>
+            <select class="form-select" name="cmbtipoGasto" id="tipo_gasto">
+                <option value="">Seleccione un tipo de gasto: </option>
+                <option value="Alimentación" <?php echo ($tipo_gasto=='Alimentación')? 'selected' : '' ?> >Alimentación</option>
+                <option value="Transporte" <?php echo ($tipo_gasto=='Transporte')? 'selected' : '' ?>>Transporte</option>
+                <option value="Salud" <?php echo  ($tipo_gasto=='Salud')? 'selected' : '' ?>>Salud</option>
+                <option value="Luz" <?php echo  ($tipo_gasto=='Luz')? 'selected' : '' ?>>Luz</option>
+                <option value="Hormiga" <?php echo  ($tipo_gasto=='Hormiga')? 'selected' : '' ?>>Hormiga</option>
+            </select><br>
 
 
-    <?php
-    if(isset($_REQUEST['mensaje'])){
-        $mensaje = $_REQUEST['mensaje'];
-        ?>
-        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <label class="form-label" for="valor_gastos">Ingrese valor de gasto:</label>
+            <input class="form-control" type="text" name="valor_gastos" id="valor_gastos" value="<?php echo isset($valor_gastos)? $valor_gastos : "" ?>"><br>
+
+            <input class="btn btn-primary" type="submit" value="Enviar" name="submit1">
+
             <?php
-            if($mensaje=='registroGuardado'){
-                echo "<p>Registro guardado.</p>";
-            }
-            elseif($mensaje == 'registroModificado'){
-                echo "<p>Registro modificado.</p>";
-            }
-            elseif($mensaje=='registroEliminado'){
-                echo "<p>Registro eliminado.</p>";
+            if($codigoPersona){
+                echo '<input class="btn btn-dark" type="submit" value="Modificar" name="submit2">';
             }
             ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+            <a class="btn btn-secondary" href="index.php">Cancelar</a>
+        </form>
+        <br>
+        <?php if($error):  ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <?php echo "<p>$error</p>"; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
+
         <?php
-    }
-    ?>
-
-    <form method="GET" action="<?php echo $_SERVER['PHP_SELF'] ?>" class="mb-3">
-        <input type="text" name="buscar" class="form-control w-50 d-inline" placeholder="Buscar por nombre..." value="<?php echo htmlspecialchars($busqueda); ?>">
-        <input type="submit" class="btn btn-success ms-2" value="Buscar">
-    </form>
-    <table class="table table-bordered table-hover">
-        <thead>
-        <th>Nombre</th>
-        <th>Tipo Gasto</th>
-        <th>Valor Gasto</th>
-        <th colspan="2">Acciones</th>
-        </thead>
-        <tbody>
-        <?php foreach($resultados as $registro): ?>
-        <tr>
-            <td><?php echo $registro['nombre']; ?></td>
-            <td><?php echo $registro['tipo_gasto']; ?></td>
-            <td><?php echo $registro['valor_gastos']; ?></td>
-            <td><a class="btn btn-primary" href="index.php?id=<?php echo $registro['codigoPersona'] ?>&op=m">Modificar</a></td>
-            <td><a class="btn btn-danger" href="index.php?id=<?php echo $registro['codigoPersona'] ?>&op=e" onclick="return confirm('Desea eliminar el registro');">Eliminar</a></td>
-            <?php $valortotal = $registro['valor_gastos'] + $valortotal ?>
-            <?php endforeach; ?>
-        </tr>
-        </tbody>
-    </table>
-    <?php
-        if($valortotal < 20000){
-            echo "<div class='alert alert-success' role='alert'>" . $valortotal . "</div>";
-
-        }else if($valortotal > 20000 && $valortotal < 30000){
-            echo "<div class='alert alert-warning' role='alert'>" . $valortotal . "</div>";
-        }else if($valortotal > 30000){
-            echo "<div class='alert alert-danger' role='alert'>" . $valortotal . "</div>";
+        if(isset($_REQUEST['mensaje'])){
+            $mensaje = $_REQUEST['mensaje'];
+            ?>
+            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                <?php
+                if($mensaje=='registroGuardado'){
+                    echo "<p>Registro guardado.</p>";
+                }
+                elseif($mensaje == 'registroModificado'){
+                    echo "<p>Registro modificado.</p>";
+                }
+                elseif($mensaje=='registroEliminado'){
+                    echo "<p>Registro eliminado.</p>";
+                }
+                ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php
         }
+        ?>
+    </div>
+    <div class="position-absolute top-100 start-50 translate-middle z-1 position-absolute p-5 rounded-3 shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+        <form method="GET" action="<?php echo $_SERVER['PHP_SELF'] ?>" class="mb-3">
+            <input type="text" name="buscar" class="form-control w-50 d-inline" placeholder="Buscar por nombre..." value="<?php echo htmlspecialchars($busqueda); ?>">
+            <input type="submit" class="btn btn-success ms-2" value="Buscar">
+        </form>
+        <table class="table table-bordered table-hover">
+            <thead>
+            <th>Nombre</th>
+            <th>Tipo Gasto</th>
+            <th>Valor Gasto</th>
+            <th colspan="2">Acciones</th>
+            </thead>
+            <tbody>
+            <?php foreach($resultados as $registro): ?>
+            <tr>
+                <td><?php echo $registro['nombre']; ?></td>
+                <td><?php echo $registro['tipo_gasto']; ?></td>
+                <td><?php echo $registro['valor_gastos']; ?></td>
+                <td><a class="btn btn-primary" href="index.php?id=<?php echo $registro['codigoPersona'] ?>&op=m">Modificar</a></td>
+                <td><a class="btn btn-danger" href="index.php?id=<?php echo $registro['codigoPersona'] ?>&op=e" onclick="return confirm('Desea eliminar el registro');">Eliminar</a></td>
+                <?php $valortotal = $registro['valor_gastos'] + $valortotal ?>
+                <?php endforeach; ?>
+            </tr>
+            </tbody>
+        </table>
+        <?php
+            if($valortotal < 20000){
+                echo "<div class='alert alert-success' role='alert'>" . $valortotal . "</div>";
 
-    ?>
+            }else if($valortotal > 20000 && $valortotal < 30000){
+                echo "<div class='alert alert-warning' role='alert'>" . $valortotal . "</div>";
+            }else if($valortotal > 30000){
+                echo "<div class='alert alert-danger' role='alert'>" . $valortotal . "</div>";
+            }
+
+        ?>
+    </div>
 </div>
 </body>
 </html>
