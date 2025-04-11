@@ -5,15 +5,16 @@ $error="";
 $hay_post = false;
 $nombre = "";
 $tipo_gasto = "";
-$valor_gasto = "";
+$valor_gastos = "";
 $codigoPersona = null;
+$valortotal = 0;
 
 $busqueda = "";
 if(isset($_REQUEST['submit1'])){
     $hay_post = true;
     $nombre = isset($_REQUEST['nombre']) ? $_REQUEST['nombre'] : "";
     $tipo_gasto = isset($_REQUEST['cmbtipoGasto']) ? $_REQUEST['cmbtipoGasto'] : "";
-    $valor_gasto = isset($_REQUEST['valor_gasto']) ? $_REQUEST['valor_gasto'] : "";
+    $valor_gastos = isset($_REQUEST['valor_gastos']) ? $_REQUEST['valor_gastos'] : "";
 
 
     if(!empty($nombre)){
@@ -26,13 +27,13 @@ if(isset($_REQUEST['submit1'])){
     if($tipo_gasto==""){
         $error .= "Seleccione un gasto";
     }
-    if($valor_gasto==""){
+    if($valor_gastos==""){
         $error .= "Seleccione un gasto";
     }
 
     if(!$error){
-        $stm_insertarRegistro = $conexion->prepare("insert into gastos(nombre, tipo_gasto, valor_gasto) values(:nombre, :tipo_gasto, :valor_gasto)");
-        $stm_insertarRegistro->execute([':nombre'=>$nombre, ':tipo_gasto'=>$tipo_gasto, ':valor_gasto'=>$valor_gasto]);
+        $stm_insertarRegistro = $conexion->prepare("insert into gastos(nombre, tipo_gasto, valor_gastos) values(:nombre, :tipo_gasto, :valor_gastos)");
+        $stm_insertarRegistro->execute([':nombre'=>$nombre, ':tipo_gasto'=>$tipo_gasto, ':valor_gastos'=>$valor_gastos]);
         header("Location: index.php?mensaje=registroGuardado");
         exit();
     }
@@ -42,7 +43,7 @@ if(isset($_REQUEST['submit2'])){
     $codigoPersona = $_REQUEST['id'];
     $nombre = isset($_REQUEST['nombre']) ? $_REQUEST['nombre'] : "";
     $tipo_gasto = isset($_REQUEST['cmbtipoGasto']) ? $_REQUEST['cmbtipoGasto'] : "";
-    $valor_gasto = isset($_REQUEST['valor_gasto']) ? $_REQUEST['valor_gasto'] : "";
+    $valor_gastos = isset($_REQUEST['valor_gastos']) ? $_REQUEST['valor_gastos'] : "";
 
     if(!empty($nombre)){
         $nombre = preg_replace("/[^a-zA-ZáéíóúÁÉÍÓÚ]/u","",$nombre);
@@ -53,16 +54,16 @@ if(isset($_REQUEST['submit2'])){
     if($tipo_gasto==""){
         $error .= "Seleccione un tipo de gasto";
     }
-    if($valor_gasto==""){
+    if($valor_gastos==""){
         $error .= "Introduzca un valor de gasto";
     }
 
     if(!$error){
-        $stm_modificar = $conexion->prepare("update gastos set nombre = :nombre, tipo_gasto = :tipo_gasto, valor_gasto = :valor_gasto where codigoPersona = :id");
+        $stm_modificar = $conexion->prepare("update gastos set nombre = :nombre, tipo_gasto = :tipo_gasto, valor_gastos = :valor_gastos where codigoPersona = :id");
         $stm_modificar->execute([
             ':nombre'=>$nombre,
             ':tipo_gasto'=>$tipo_gasto,
-            ':valor_gasto'=>$valor_gasto,
+            ':valor_gastos'=>$valor_gastos,
             ':id'=> $codigoPersona
         ]);
         header("Location: index.php?mensaje=registroModificado");
@@ -76,14 +77,13 @@ if(isset($_REQUEST['id']) && isset($_REQUEST['op'])){
     $op = $_REQUEST['op'];
 
     if($op == 'm'){
-        // $stm_seleccionarRegistro = $conexion->prepare("update cliente set nombreUsuario=:nombre, sexo=:sexo, pais:pais");
         $stm_seleccionarRegistro = $conexion->prepare("select * from gastos where codigoPersona=:id");
         $stm_seleccionarRegistro->execute([':id'=>$id]);
         $resultado = $stm_seleccionarRegistro->fetch();
         $codigoPersona = $resultado['codigoPersona'];
         $nombre = $resultado['nombre'];
         $tipo_gasto = $resultado['tipo_gasto'];
-        $valor_gasto = $resultado['valor_gasto'];
+        $valor_gastos = $resultado['valor_gastos'];
     }
     else if($op == 'e'){
         $stm_eliminar = $conexion->prepare("delete from gastos where codigoPersona = :id");
@@ -142,8 +142,8 @@ $resultados = $stm->fetchAll();
         </select><br>
 
 
-        <label class="form-label" for="valor_gasto">Ingrese valor de gasto:</label>
-        <input class="form-control" type="text" name="valor_gasto" id="valor_gasto" value="<?php echo isset($valor_gasto)? $valor_gasto : "" ?>"><br>
+        <label class="form-label" for="valor_gastos">Ingrese valor de gasto:</label>
+        <input class="form-control" type="text" name="valor_gastos" id="valor_gastos" value="<?php echo isset($valor_gastos)? $valor_gastos : "" ?>"><br>
 
         <input class="btn btn-primary" type="submit" value="Enviar" name="submit1">
 
@@ -201,13 +201,25 @@ $resultados = $stm->fetchAll();
         <tr>
             <td><?php echo $registro['nombre']; ?></td>
             <td><?php echo $registro['tipo_gasto']; ?></td>
-            <td><?php echo $registro['valor_gasto']; ?></td>
+            <td><?php echo $registro['valor_gastos']; ?></td>
             <td><a class="btn btn-primary" href="index.php?id=<?php echo $registro['codigoPersona'] ?>&op=m">Modificar</a></td>
             <td><a class="btn btn-danger" href="index.php?id=<?php echo $registro['codigoPersona'] ?>&op=e" onclick="return confirm('Desea eliminar el registro');">Eliminar</a></td>
+            <?php $valortotal = $registro['valor_gastos'] + $valortotal ?>
             <?php endforeach; ?>
         </tr>
         </tbody>
     </table>
+    <?php
+        if($valortotal < 20000){
+            echo "<div class='alert alert-success' role='alert'>" . $valortotal . "</div>";
+
+        }else if($valortotal > 20000 && $valortotal < 30000){
+            echo "<div class='alert alert-warning' role='alert'>" . $valortotal . "</div>";
+        }else if($valortotal > 30000){
+            echo "<div class='alert alert-danger' role='alert'>" . $valortotal . "</div>";
+        }
+
+    ?>
 </div>
 </body>
 </html>
